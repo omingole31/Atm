@@ -1,0 +1,203 @@
+AtmOperationInterface.java
+--------------------------
+package com.om.atm_machine;
+
+public interface AtmOperationInterface 
+{
+	public void viewBalance();
+	public void withdrawAmount(double withdrawAmount);
+	public void depositAmount(double depositAmount);
+	public void viewMiniStatement();
+}
+===========================================================
+Atm.java
+--------
+package com.om.atm_machine;
+
+public class Atm 
+{
+	private double balance;
+	private double depositAmount;
+	private double withdrawAmount;
+	
+	//default constructor
+	public Atm()
+	{
+		
+	}
+	
+	//getter setter
+	public double getBalance()
+	{
+		return balance;
+	}
+	
+	public void setBalance(double balance)
+	{
+		this.balance=balance;
+	}
+	
+	public double getDepositAmount()
+	{
+		return depositAmount;
+	}
+	
+	public void setDepositAmount(double depositAmount)
+	{
+		this.depositAmount = depositAmount;
+	}
+	
+	public double getWithdrawAmount()
+	{
+		return withdrawAmount;
+	}
+	
+	public void setWithdrawAmount(double withdrawAmount)
+	{
+		this.withdrawAmount = withdrawAmount;
+	}
+
+	
+}
+===========================================================
+AtmImplementations.java
+-----------------------
+package com.om.atm_machine;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public class AtmImplementations implements AtmOperationInterface
+{
+	Atm atm=new Atm();
+	Map<Double,String> ministmt=new HashMap<>();
+	@Override
+	public void viewBalance() 
+	{
+		System.out.println("Available Balance is: " +atm.getBalance());
+	}
+
+	@Override
+	public void withdrawAmount(double withdrawAmount) 
+	{	
+		if(withdrawAmount%500==0)
+		{
+			if(withdrawAmount<=atm.getBalance())
+			{
+				ministmt.put(withdrawAmount,"Amount withdrawn");
+				System.out.println("Collect the cash " +withdrawAmount);
+				atm.setBalance(atm.getBalance()-withdrawAmount);
+				viewBalance();
+			}
+			else
+			{
+				System.err.println("Insufficient Balance!");
+			}
+		}
+		else
+		{
+			System.out.println("please Enter the amount in multiples of 500");
+		}
+		
+	}
+
+	@Override
+	public void depositAmount(double depositAmount)
+	{
+		ministmt.put(depositAmount,"Amount Deposited");
+		System.out.println(depositAmount+ " Deposited Succesfully!");
+		atm.setBalance(atm.getBalance()+depositAmount);
+		viewBalance();
+	}
+
+	@Override
+	public void viewMiniStatement()
+	{
+		Set<Double> set=ministmt.keySet();
+		for(Double d:set) 
+		{
+			System.out.println(d+"="+ministmt.get(d));
+		}
+	}
+
+}
+===========================================================
+AtmMain.java
+------------
+package com.om.atm_machine;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class AtmMain
+{
+	private static int status;
+
+	public static void main(String[] args) 
+	{
+		AtmImplementations op=new AtmImplementations();
+		int atmnumber=12345;
+		int atmpin=123;
+		Scanner sc=new Scanner(System.in);
+		try(sc)
+		{
+			System.out.println("Welcome to ATM Machine!");
+			System.out.print("Enter Atm number: ");
+			int atmnumber1=sc.nextInt();
+			System.out.print("Enter pin: ");
+			int atmpin1=sc.nextInt();
+			if((atmnumber==atmnumber1) &&(atmpin==atmpin1))
+			{
+				while(true)
+				{
+					System.out.println("1.View Available Balance\n2.Withdraw Amount\n3.Deposit amount\n4.View MiniStatement\n5.exit");
+					System.out.println("Enter choice :");
+					int choice=sc.nextInt();
+					switch(choice)
+					{
+					case 1:
+						//System.out.println("View Available Balance");
+						op.viewBalance();
+						break;
+					case 2:
+						System.out.println(" Enter amount to withdrawn");
+						double withdrawAmount=sc.nextDouble();
+						op.withdrawAmount(withdrawAmount);
+						break;
+					case 3:
+						System.out.println("Enter Amount to Deposit:");
+						double depositAmount=sc.nextDouble();//5000
+						op.depositAmount(depositAmount);
+					    break;
+					case 4:
+						op.viewMiniStatement();
+					    break;
+					case 5:
+						System.out.println("Collect your ATM Card\n Thank you for choosing ATM Machine");
+						System.exit(status);
+						break;
+					default:
+						System.err.println("Please Enter correct choice");	
+			        }
+			 	}
+			}
+			else
+			{
+				System.err.println("Incorrect ATM Number or pin!!!");
+				System.exit(status);
+			}
+		}
+		catch(InputMismatchException e)
+		{
+			System.err.println("Please Enter Valid Input!!!");
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+}
+
+
